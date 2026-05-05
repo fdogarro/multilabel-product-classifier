@@ -82,7 +82,6 @@ class AmazonLoader:
                     DATASET_REPO,
                     f"raw_meta_{cat}",
                     split="full",
-                    trust_remote_code=True,
                     cache_dir=str(self.cache_dir),
                 )
                 records.extend(self._process_category(ds, cat, per_cat))
