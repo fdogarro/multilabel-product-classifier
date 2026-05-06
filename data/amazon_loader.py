@@ -82,7 +82,7 @@ class AmazonLoader:
                     DATASET_REPO,
                     f"raw_meta_{cat}",
                     split="full",
-                    cache_dir=str(self.cache_dir),
+                    streaming=True,
                 )
                 records.extend(self._process_category(ds, cat, per_cat))
             except Exception as e:
