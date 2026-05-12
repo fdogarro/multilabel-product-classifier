@@ -93,3 +93,4 @@ requirements.txt
 | LoRA-Mistral-7B (v0.2) | 0.868 | 0.662 | 262.7 ms |
 
 Macro-F1 across the 23 labels with training coverage: **0.850** (BERT) / **0.864** (LoRA-Mistral).
+
