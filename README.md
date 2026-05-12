@@ -21,8 +21,8 @@ A confidence-calibrated multi-agent pipeline that automatically assigns Shopify 
 ## Local Setup
 
 ```bash
-git clone https://github.com/fdogarro/shopify-tagger.git
-cd shopify-tagger
+git clone https://github.com/fdogarro/multilabel-product-classifier.git
+cd multilabel-product-classifier
 pip install -r requirements.txt
 jupyter notebook notebooks/shopify_tagger_full_v7.ipynb
 ```

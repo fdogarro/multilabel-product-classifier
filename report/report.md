@@ -5,7 +5,7 @@ CSCI E-222 — Foundations of Large Language Models
 Harvard Extension School · Spring 2026
 
 **Video Presentation:** `[INSERT VIDEO URL HERE]`  
-**GitHub Repository:** https://github.com/fdogarro/shopify-tagger
+**GitHub Repository:** https://github.com/fdogarro/multilabel-product-classifier
 
 ---
 
@@ -266,8 +266,8 @@ Full requirements: `requirements.txt` in the repository.
 **Option 2: Local machine**
 
 ```bash
-git clone https://github.com/fdogarro/shopify-tagger.git
-cd shopify-tagger
+git clone https://github.com/fdogarro/multilabel-product-classifier.git
+cd multilabel-product-classifier
 pip install -r requirements.txt
 jupyter notebook notebooks/shopify_tagger_full_v7.ipynb
 ```
@@ -466,4 +466,4 @@ Figures 1–4 above present the key visualizations; additional category-distribu
 ---
 
 *Video Presentation:* `[INSERT VIDEO URL HERE]`  
-*GitHub:* https://github.com/fdogarro/shopify-tagger
+*GitHub:* https://github.com/fdogarro/multilabel-product-classifier
