@@ -63,3 +63,4 @@ drive/
 logs/
 wandb/
 mlruns/
+slides/node_modules

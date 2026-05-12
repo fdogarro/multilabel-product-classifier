@@ -1,0 +1,12 @@
+{
+  "name": "shopify-tagger-slides",
+  "private": true,
+  "scripts": {
+    "dev": "slidev slides.md --open",
+    "export": "slidev export slides.md"
+  },
+  "dependencies": {
+    "@slidev/cli": "latest",
+    "@slidev/theme-default": "latest"
+  }
+}
