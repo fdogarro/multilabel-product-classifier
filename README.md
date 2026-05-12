@@ -1,8 +1,8 @@
-# Shopify Product Tagger — Multi-Agent LLM Pipeline
+# Multi-Label Product Classifier — Multi-Agent LLM Pipeline
 
-**Felicia D. O'Garro · CSCI E-222 · Harvard Extension School · Spring 2026**
+**CSCI E-222 · Harvard Extension School · Spring 2026**
 
-A confidence-calibrated multi-agent pipeline that automatically assigns Shopify product taxonomy tags to e-commerce listings. Products are routed through BERT (high confidence), LoRA-Mistral-7B (ambiguous), or a few-shot LLM API call (out-of-distribution) based on real-time confidence scores.
+A confidence-calibrated multi-agent pipeline for automatic product taxonomy classification in e-commerce. Products are routed through BERT (high confidence), LoRA-Mistral-7B (ambiguous), or a few-shot LLM API call (out-of-distribution) based on real-time confidence scores.
 
 ---
 
@@ -71,7 +71,7 @@ Phase 4 requires API keys for Claude Haiku (Anthropic) and GPT-4o-mini (OpenAI).
 notebooks/
   shopify_tagger_full_v7.ipynb  ← main entry point
 data/
-  taxonomy.json                 ← 30-label Shopify taxonomy
+  taxonomy.json                 ← 30-label product taxonomy
   amazon_loader.py
   dataset_builder.py
   taxonomy_mapper.py
