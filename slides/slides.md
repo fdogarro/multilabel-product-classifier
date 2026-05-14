@@ -41,27 +41,27 @@ Felicia D. O'Garro
 
 # The Problem
 
-Merchants listing products on Shopify must manually assign taxonomy tags.
+Tagging products on Shopify sounds straightforward — until you're doing it at scale.
 
-- **Slow** — tagging hundreds of SKUs by hand takes hours
-- **Inconsistent** — different people apply different tags to similar products
-- **Inaccurate** — wrong tags hurt search ranking and discoverability
+- **Slow** — hundreds of SKUs, all tagged by hand
+- **Inconsistent** — two people tag the same product differently every time
+- **Costly** — wrong tags hurt search ranking and discoverability
 
-**Goal:** Build an automated pipeline that assigns the correct Shopify taxonomy tags to any product given its title and description.
+**Goal:** Build a pipeline that automatically assigns the right taxonomy tags to any product, given just its title and description.
 
 ---
 
 # Why Multi-Agent?
 
-No single model handles all cases well.
+One model can't handle every case well — so I didn't try to force it to.
 
-| Scenario | Challenge |
-|----------|-----------|
-| Common products | Need speed and low cost |
-| Ambiguous products | Need deeper language understanding |
-| Out-of-distribution products | Need general world knowledge |
+| Scenario | What's needed |
+|----------|--------------|
+| Common products | Speed and low cost |
+| Ambiguous products | Deeper language understanding |
+| Out-of-distribution products | General world knowledge |
 
-**Solution:** Route each product to the most appropriate model based on confidence — fast when confident, powerful when not.
+**The answer:** Route each product to the right model based on confidence. Fast when sure, more powerful when not.
 
 ---
 
@@ -97,7 +97,7 @@ Product (title + description)<br/>
 | **LLM API Tagger** | Few-shot Claude Haiku / GPT-4o-mini fallback |
 | **Validator** | Flags low-confidence or tag-sparse predictions |
 
-BERT serves dual purpose: it is both the confidence estimator and the primary tagger. LoRA-Mistral and the LLM API are fallbacks that only activate when BERT is not confident enough.
+BERT does double duty — it's both the confidence estimator and the primary tagger. The other two paths only activate when BERT isn't sure enough.
 
 ---
 
@@ -114,7 +114,7 @@ else:
     route → LLM API       # out-of-distribution — general knowledge
 ```
 
-Cost and latency increase left to right. The pipeline is designed to keep the majority of traffic on the cheapest, fastest path.
+Cost and latency go up left to right. The goal is to keep most traffic on BERT — cheap, fast, and free.
 
 ---
 
@@ -148,10 +148,10 @@ Cost and latency increase left to right. The pipeline is designed to keep the ma
 | Test  | 7,638 |
 | **Total** | **76,378** |
 
-- 21 Amazon categories → 30 Shopify taxonomy labels
-- Loaded via `streaming=True` — no disk overhead
+- 21 Amazon categories mapped to 30 taxonomy labels
+- Loaded with `streaming=True` — no disk overhead on Colab
 - Avg labels per product: **1.08**
-- Label coverage: **24 / 30** labels represented
+- Label coverage: **23 / 30** labels represented in training data
 
 ---
 
@@ -201,7 +201,7 @@ Loss and validation F1 over 5 epochs. Micro-F1 peaks at epoch 5 — no overfitti
 
 <img src="./per_label_f1.png" style="max-height: 360px; display: block; margin: 0 auto;" />
 
-Six labels score 0.0 due to insufficient training representation. Covered labels perform strongly, with seven labels above F1 = 0.93.
+Seven labels score 0.0 — none of those categories had enough representation in the training data. The 23 covered labels perform well, with seven of them above F1 = 0.93.
 
 ---
 
@@ -226,11 +226,11 @@ Six labels score 0.0 due to insufficient training representation. Covered labels
 | LoRA-Mistral | 262.7 ms | 267.1 ms | **17× slower** |
 | LLM API | ~800 ms + network | — | ~50× slower (est.) |
 
-**This tradeoff directly motivates the routing layer.**
+**This tradeoff is exactly why routing matters.**
 
-- BERT handles high-confidence products at ~15ms
-- LoRA-Mistral activates only for ambiguous products
-- LLM API reserved for out-of-distribution cases
+- BERT handles high-confidence products in ~15ms
+- LoRA-Mistral only fires on ambiguous inputs
+- LLM API is a last resort for truly out-of-distribution cases
 
 ---
 
@@ -238,7 +238,7 @@ Six labels score 0.0 due to insufficient training representation. Covered labels
 
 <img src="./routing_decisions.png" style="max-height: 260px; display: block; margin: 0 auto;" />
 
-Routing on 497 demo products — BERT achieved max confidence ≥ 0.75 on all in-distribution products. Validator flagged: **0 / 497**.
+Routing across 497 demo products. BERT hit max confidence ≥ 0.75 on every in-distribution product — no surprises there for a held-out test set. Validator flagged: **0 / 497**.
 
 ---
 
@@ -270,20 +270,20 @@ Built with `gradio.Interface` + `share=True` for a public URL in Colab.
 
 # Strengths, Limitations & Future Work
 
-**Strengths**
-- Strong performance on covered labels — seven labels above F1 = 0.93
-- LoRA-Mistral outperforms BERT on all metrics with only 3 epochs
-- Cost-efficient by design — most traffic stays on the free BERT path
+**What worked**
+- Covered labels are strong — seven above F1 = 0.93
+- LoRA-Mistral beats BERT on every metric after just 3 epochs
+- Cost-efficient by design — most traffic never touches a paid API
 
-**Limitations**
-- 6 of 30 labels have zero training coverage → F1 = 0.0
-- Routing thresholds manually tuned — could be learned
-- LoRA and LLM API paths not exercised on in-distribution test data
+**What didn't**
+- 7 of 30 labels have zero training coverage; those all land at F1 = 0.0
+- Routing thresholds are manually set — there's room to learn them
+- LoRA and LLM API routes aren't exercised on in-distribution test data
 
-**Future Work**
-- Active learning to close label coverage gap
-- Shopify OAuth integration — tag products directly via API
+**What's next**
+- Active learning to close the label coverage gap
 - Merchant feedback loop for continual improvement
+- API integration to tag products without leaving the storefront
 
 ---
 
@@ -291,13 +291,13 @@ Built with `gradio.Interface` + `share=True` for a public URL in Colab.
 
 A confidence-calibrated multi-agent pipeline that:
 
-1. **Preprocesses** product text and deduplicates efficiently
-2. **Classifies** with BERT at 85.6% micro-F1 and 15ms latency
-3. **Designed to route** ambiguous cases to LoRA-Mistral or LLM API
-4. **Validates** outputs before returning to the merchant
-5. **Scales** cost-efficiently — most traffic never hits a paid API
+1. **Preprocesses** product text and deduplicates before anything else
+2. **Classifies** with BERT — 85.6% micro-F1 at 15ms per product
+3. **Routes** ambiguous cases to LoRA-Mistral or the LLM API
+4. **Validates** every prediction before it goes back to the merchant
+5. **Stays cheap** — most traffic never touches a paid API
 
-**GitHub:** `github.com/fdogarro/shopify-tagger`
+**GitHub:** `github.com/fdogarro/multilabel-product-classifier`
 
 ---
 
@@ -309,4 +309,4 @@ A confidence-calibrated multi-agent pipeline that:
 
 *(YouTube / Zoom / Panopto)*
 
-**GitHub:** `github.com/fdogarro/shopify-tagger`
+**GitHub:** `github.com/fdogarro/multilabel-product-classifier`
